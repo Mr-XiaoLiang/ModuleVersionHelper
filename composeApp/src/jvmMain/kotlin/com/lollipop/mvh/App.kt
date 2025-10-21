@@ -1,7 +1,6 @@
 package com.lollipop.mvh
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,10 +8,7 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Commit
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Output
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,13 +16,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lollipop.mvh.ui.Destination
+import com.lollipop.mvh.ui.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,27 +73,22 @@ private fun AppNavHost(
         startDestination = startDestination.name
     ) {
         composable(Destination.GIT_STATE.name) {
-            Box(Modifier.fillMaxSize().background(Color.Red)) {
-                Text(text = Destination.GIT_STATE.label)
-            }
+            GitStatePage()
         }
         composable(Destination.REPOSITORY_LIST.name) {
-            Box(Modifier.fillMaxSize().background(Color.Blue)) {
-                Text(text = Destination.REPOSITORY_LIST.label)
-            }
+            RepositoryListPage()
         }
         composable(Destination.ADD_REPOSITORY.name) {
-            Box(Modifier.fillMaxSize().background(Color.Black))
-
+            AddRepositoryPage()
         }
         composable(Destination.VERSION_COLUMN_MANAGER.name) {
-            Box(Modifier.fillMaxSize().background(Color.Yellow))
+            VersionColumnManagerPage()
         }
         composable(Destination.ADD_VERSION_COLUMN.name) {
-            Box(Modifier.fillMaxSize().background(Color.Cyan))
+            AddVersionColumnPage()
         }
         composable(Destination.MODULE_INFO_OUTPUT.name) {
-            Box(Modifier.fillMaxSize().background(Color.Magenta))
+            ModuleInfoOutputPage()
         }
     }
 }
@@ -107,9 +97,9 @@ private fun getDestinationIcon(destination: Destination): ImageVector {
     return when (destination) {
         Destination.GIT_STATE -> Icons.Filled.Commit
         Destination.REPOSITORY_LIST -> Icons.AutoMirrored.Filled.List
-        Destination.ADD_REPOSITORY -> Icons.Filled.Add
+        Destination.ADD_REPOSITORY -> Icons.Filled.AddHome
         Destination.VERSION_COLUMN_MANAGER -> Icons.Filled.Info
-        Destination.ADD_VERSION_COLUMN -> Icons.Filled.Add
+        Destination.ADD_VERSION_COLUMN -> Icons.Filled.NewLabel
         Destination.MODULE_INFO_OUTPUT -> Icons.Filled.Output
     }
 }
