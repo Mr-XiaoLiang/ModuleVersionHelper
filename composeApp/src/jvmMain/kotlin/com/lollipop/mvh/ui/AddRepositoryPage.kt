@@ -6,20 +6,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lollipop.mvh.data.ProjectInfo
 import com.lollipop.mvh.git.GitStore
 import com.lollipop.mvh.widget.ContentPage
+import com.lollipop.mvh.widget.InputField
 
 @Composable
 fun AddRepositoryPage() {
@@ -27,25 +24,26 @@ fun AddRepositoryPage() {
     var remoteUrl by rememberSaveable { mutableStateOf("") }
     var localName by rememberSaveable { mutableStateOf("") }
     var displayName by rememberSaveable { mutableStateOf("") }
+    val gitStore by remember { GitStore.current }
 
     ContentPage {
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
         ) {
 
-            TextField(
+            InputField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 value = remoteUrl,
                 onValueChange = { remoteUrl = it },
                 label = { Text("远程仓库地址") }
             )
-            TextField(
+            InputField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 value = localName,
                 onValueChange = { localName = it },
                 label = { Text("本地仓库名称") }
             )
-            TextField(
+            InputField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 value = displayName,
                 onValueChange = { displayName = it },
@@ -57,15 +55,18 @@ fun AddRepositoryPage() {
             ) {
                 Button(
                     modifier = Modifier,
-                    enabled = remoteUrl.isNotEmpty() && localName.isNotEmpty() && displayName.isNotEmpty(),
+                    enabled = remoteUrl.isNotEmpty() && localName.isNotEmpty() && displayName.isNotEmpty() && gitStore != null,
                     onClick = {
-                        GitStore.addRepository(
-                            ProjectInfo(
-                                remote = remoteUrl,
-                                localName = localName,
-                                displayName = displayName
+                        gitStore?.let {
+                            it.addRepository(
+                                ProjectInfo(
+                                    remote = remoteUrl,
+                                    localName = localName,
+                                    displayName = displayName
+                                )
                             )
-                        )
+                            it.flush()
+                        }
                         remoteUrl = ""
                         localName = ""
                         displayName = ""

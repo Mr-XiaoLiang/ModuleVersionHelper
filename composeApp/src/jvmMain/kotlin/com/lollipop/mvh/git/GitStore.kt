@@ -1,37 +1,58 @@
 package com.lollipop.mvh.git
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.lollipop.mvh.data.MvhConfig
 import com.lollipop.mvh.data.ProjectInfo
 import java.io.File
 
-object GitStore {
+class GitStore(
+    val file: File
+) {
 
-    private var sshHomePath = ""
+    companion object {
+        private val currentMutable = mutableStateOf<GitStore?>(null)
+        val current: State<GitStore?>
+            get() {
+                return currentMutable
+            }
+        val repository = SnapshotStateList<GitRepository>()
 
-    private val homeDir by lazy {
-        File(System.getProperty("user.home"), "ModuleVersionHelper")
-    }
-
-    val repositoryList = SnapshotStateList<GitRepository>()
-
-    fun optSshHome(): String {
-        if (sshHomePath.isEmpty()) {
-            sshHomePath = System.getProperty("user.home") + "/.ssh"
+        fun changeCurrent(gitStore: GitStore?) {
+            currentMutable.value = gitStore
+            gitStore?.flush()
         }
-        return sshHomePath
+
+        fun addRepository(info: ProjectInfo) {
+            current.value?.let {
+                it.addRepository(info)
+                it.flush()
+            }
+        }
     }
 
-    fun setSshHome(path: String) {
-        sshHomePath = path
+    val name: String by lazy {
+        file.name
     }
+
+    private val repositoryList = ArrayList<GitRepository>()
 
     fun addRepository(info: ProjectInfo) {
         val remote = info.remote
         if (repositoryList.any { it.remoteUrl == remote }) {
             return
         }
-        val localPath = File(homeDir, info.localName)
+        val localPath = File(MvhConfig.homeDir, info.localName)
         repositoryList.add(GitRepository(remote, localPath, info))
+    }
+
+    fun flush() {
+        val selected = current.value
+        if (selected === this) {
+            repository.clear()
+            repository.addAll(repositoryList)
+        }
     }
 
 }
