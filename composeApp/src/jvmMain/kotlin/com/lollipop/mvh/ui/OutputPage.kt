@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import com.lollipop.mvh.widget.ContentPage
 
 @Composable
-fun AddVersionColumnPage() {
+fun OutputPage() {
     ContentPage {
-        Text("添加仓库")
+        Text("OutputPage")
     }
 }

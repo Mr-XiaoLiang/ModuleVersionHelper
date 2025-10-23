@@ -86,6 +86,14 @@ sealed class FlowResult<T> {
 
     class Error<T>(val error: Throwable) : FlowResult<T>()
 
+    fun getOrNull(): T? {
+        return if (this is Success) {
+            data
+        } else {
+            null
+        }
+    }
+
 }
 
 fun interface FlowError<T> {

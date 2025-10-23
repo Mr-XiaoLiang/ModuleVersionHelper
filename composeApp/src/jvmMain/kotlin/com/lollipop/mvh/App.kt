@@ -75,20 +75,17 @@ private fun AppNavHost(
         composable(Destination.GIT_STATE.name) {
             GitStatePage()
         }
-        composable(Destination.REPOSITORY_LIST.name) {
-            RepositoryListPage()
+        composable(Destination.REPOSITORY.name) {
+            RepositoryPage()
         }
-        composable(Destination.ADD_REPOSITORY.name) {
-            AddRepositoryPage()
+        composable(Destination.OUTPUT.name) {
+            OutputPage()
         }
-        composable(Destination.VERSION_COLUMN_MANAGER.name) {
-            VersionColumnManagerPage()
+        composable(Destination.SAMPLE.name) {
+            SamplePage()
         }
-        composable(Destination.ADD_VERSION_COLUMN.name) {
-            AddVersionColumnPage()
-        }
-        composable(Destination.MODULE_INFO_OUTPUT.name) {
-            ModuleInfoOutputPage()
+        composable(Destination.TEMPLATE.name) {
+            TemplatePage()
         }
     }
 }
@@ -96,10 +93,9 @@ private fun AppNavHost(
 private fun getDestinationIcon(destination: Destination): ImageVector {
     return when (destination) {
         Destination.GIT_STATE -> Icons.Filled.Commit
-        Destination.REPOSITORY_LIST -> Icons.AutoMirrored.Filled.List
-        Destination.ADD_REPOSITORY -> Icons.Filled.AddHome
-        Destination.VERSION_COLUMN_MANAGER -> Icons.Filled.Info
-        Destination.ADD_VERSION_COLUMN -> Icons.Filled.NewLabel
-        Destination.MODULE_INFO_OUTPUT -> Icons.Filled.Output
+        Destination.REPOSITORY -> Icons.AutoMirrored.Filled.List
+        Destination.SAMPLE -> Icons.Filled.AddHome
+        Destination.TEMPLATE -> Icons.Filled.Info
+        Destination.OUTPUT -> Icons.Filled.Output
     }
 }

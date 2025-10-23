@@ -1,6 +1,7 @@
 package com.lollipop.mvh.widget
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,7 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ListItem(content: @Composable () -> Unit) {
+fun ListItem(
+    clickCallback: (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -20,8 +24,16 @@ fun ListItem(content: @Composable () -> Unit) {
                 color = MaterialTheme.colors.primarySurface.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(8.dp)
             )
+            .optClick(clickCallback)
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         content()
     }
+}
+
+private fun Modifier.optClick(clickCallback: (() -> Unit)?): Modifier {
+    if (clickCallback == null) {
+        return this
+    }
+    return clickable(onClick = clickCallback)
 }

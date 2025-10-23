@@ -5,31 +5,26 @@ enum class Destination(val label: String) {
     /**
      * 显示Git状态
      */
-    GIT_STATE("Git状态"),
+    GIT_STATE("同步状态"),
 
     /**
-     * 显示仓库列表
+     * 模板显示
      */
-    REPOSITORY_LIST("仓库列表"),
+    TEMPLATE("输出模板"),
 
     /**
-     * 添加仓库
+     * 仓库
      */
-    ADD_REPOSITORY("添加仓库"),
+    REPOSITORY("代码仓库"),
 
     /**
-     * 版本信息的管理器
+     * 样板
      */
-    VERSION_COLUMN_MANAGER("信息管理"),
-
-    /**
-     * 添加版本列信息
-     */
-    ADD_VERSION_COLUMN("添加信息"),
+    SAMPLE("文档样板"),
 
     /**
      * 模块信息的输出
      */
-    MODULE_INFO_OUTPUT("版本输出"),
+    OUTPUT("文档输出"),
 
 }
