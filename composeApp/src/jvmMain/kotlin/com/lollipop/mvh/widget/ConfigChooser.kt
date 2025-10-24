@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,19 +21,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.lollipop.mvh.data.ConfigChooseManager
+import com.lollipop.mvh.tools.Clipboard
 import com.lollipop.mvh.tools.FileChooserHelper
 import java.io.File
+
 
 @Composable
 fun ConfigChooser(
     modifier: Modifier,
     contentColor: Color,
     module: ConfigChooseManager.ChooserModule,
+    template: String = "",
     onFileChooser: (File) -> Unit,
 ) {
     val historyList = remember { module.historyList }
     val currentFile by remember { module.currentFile }
     var showDialog by remember { mutableStateOf(false) }
+    var showTemplateDialog by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier,
@@ -71,6 +74,18 @@ fun ConfigChooser(
                 },
             tint = contentColor
         )
+        if (template.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(16.dp))
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = "Info",
+                modifier = Modifier.size(24.dp)
+                    .clickable {
+                        showTemplateDialog = true
+                    },
+                tint = contentColor
+            )
+        }
     }
     HistoryDialog(
         showDialog = showDialog,
@@ -84,6 +99,13 @@ fun ConfigChooser(
             module.choose(it, false)
             showDialog = false
         }
+    )
+    TemplateDialog(
+        showDialog = showTemplateDialog,
+        onDismiss = {
+            showTemplateDialog = false
+        },
+        content = template
     )
 }
 
@@ -150,6 +172,31 @@ fun HistoryDialog(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TemplateDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    content: String
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            text = {
+                SelectionContainer {
+                    Text(text = content)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    Clipboard.copy(content)
+                }) {
+                    Text(text = "复制")
+                }
+            }
+        )
     }
 }
 

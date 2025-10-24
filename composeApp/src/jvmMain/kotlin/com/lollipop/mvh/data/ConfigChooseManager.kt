@@ -32,7 +32,7 @@ object ConfigChooseManager {
     }
 
     class ChooserModule(
-        val name: String
+        val name: String,
     ) {
 
         val currentFile = mutableStateOf<File?>(null)
