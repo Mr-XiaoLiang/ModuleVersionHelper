@@ -19,7 +19,7 @@ fun ListItem(
 ) {
     Box(
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(vertical = 8.dp)
             .background(
                 color = MaterialTheme.colors.primarySurface.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(8.dp)

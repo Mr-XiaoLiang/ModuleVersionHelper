@@ -8,10 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.lollipop.mvh.data.ConfigChooseManager
+import com.lollipop.mvh.data.ChooserModule
 import com.lollipop.mvh.tools.Clipboard
 import com.lollipop.mvh.tools.FileChooserHelper
 import java.io.File
@@ -30,7 +27,7 @@ import java.io.File
 fun ConfigChooser(
     modifier: Modifier,
     contentColor: Color,
-    module: ConfigChooseManager.ChooserModule,
+    module: ChooserModule,
     template: String = "",
     onFileChooser: (File) -> Unit,
 ) {
@@ -93,6 +90,9 @@ fun ConfigChooser(
             showDialog = false
             module.save()
         },
+        onRefresh = {
+            module.fetchList()
+        },
         historyList = historyList,
         onSelect = {
             onFileChooser(it)
@@ -113,6 +113,7 @@ fun ConfigChooser(
 fun HistoryDialog(
     showDialog: Boolean,
     onDismiss: () -> Unit,
+    onRefresh: () -> Unit,
     historyList: MutableList<File>,
     onSelect: (File) -> Unit
 ) {
@@ -128,11 +129,26 @@ fun HistoryDialog(
                 Column(
                     modifier = Modifier.padding(16.dp),
                 ) {
-                    Text(
-                        text = "历史配置",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colors.onSurface
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = "历史配置",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colors.onSurface,
+                            modifier = Modifier.weight(1F)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Refresh",
+                            modifier = Modifier.size(24.dp)
+                                .clickable {
+                                    onRefresh()
+                                },
+                            tint = MaterialTheme.colors.onSurface
+                        )
+                    }
                     LazyColumn {
                         items(historyList, key = { it.absolutePath }) { file ->
                             ListItem(

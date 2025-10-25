@@ -1,13 +1,15 @@
 package com.lollipop.mvh.ui
 
 import androidx.compose.runtime.Composable
-import com.lollipop.mvh.data.ConfigChooseManager
+import com.lollipop.mvh.data.ChooserModule
 import com.lollipop.mvh.widget.ConfigPanel
 import com.lollipop.mvh.widget.ContentPage
 
 object TemplatePageState {
     val module by lazy {
-        ConfigChooseManager.optModule("template")
+        ChooserModule.optModule("template") {
+            it.onContentChangedCallback = ::onContentChanged
+        }
     }
 
     val template by lazy {
@@ -26,6 +28,10 @@ object TemplatePageState {
                 }
             ]
         """.trimIndent()
+    }
+
+    private fun onContentChanged(content: String) {
+        // TODO
     }
 
 }

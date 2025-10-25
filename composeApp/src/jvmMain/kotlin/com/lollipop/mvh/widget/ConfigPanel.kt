@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lollipop.mvh.data.ConfigChooseManager
+import com.lollipop.mvh.data.ChooserModule
 import com.lollipop.mvh.tools.Clipboard
 
 @Composable
@@ -59,7 +59,7 @@ fun OutputPanel(
 @Composable
 private fun ColumnScope.ConfigFragment(
     title: String,
-    module: ConfigChooseManager.ChooserModule,
+    module: ChooserModule,
     template: String
 ) {
     val moduleContent by remember { module.currentContent }
@@ -106,8 +106,8 @@ private fun ColumnScope.ConfigFragment(
 fun ConfigPanel(
     firstTitle: String,
     secondTitle: String,
-    firstModule: ConfigChooseManager.ChooserModule,
-    secondModule: ConfigChooseManager.ChooserModule,
+    firstModule: ChooserModule,
+    secondModule: ChooserModule,
     firstTemplate: String,
     secondTemplate: String
 ) {
@@ -122,7 +122,7 @@ fun ConfigPanel(
 @Composable
 fun ConfigPanel(
     title: String,
-    module: ConfigChooseManager.ChooserModule,
+    module: ChooserModule,
     template: String,
 ) {
     Column(

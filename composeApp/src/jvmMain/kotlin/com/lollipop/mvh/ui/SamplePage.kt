@@ -1,17 +1,29 @@
 package com.lollipop.mvh.ui
 
 import androidx.compose.runtime.Composable
-import com.lollipop.mvh.data.ConfigChooseManager
+import com.lollipop.mvh.data.ChooserModule
 import com.lollipop.mvh.widget.ConfigPanel
 import com.lollipop.mvh.widget.ContentPage
 
 object SamplePageState {
 
     val headerModule by lazy {
-        ConfigChooseManager.optModule("sample_header")
+        ChooserModule.optModule("sample_header") {
+            it.onContentChangedCallback = ::onHeaderChanged
+        }
     }
     val footerModule by lazy {
-        ConfigChooseManager.optModule("sample_footer")
+        ChooserModule.optModule("sample_footer") {
+            it.onContentChangedCallback = ::onFooterChanged
+        }
+    }
+
+    private fun onHeaderChanged(content: String) {
+        // TODO
+    }
+
+    private fun onFooterChanged(content: String) {
+        // TODO
     }
 
 }
