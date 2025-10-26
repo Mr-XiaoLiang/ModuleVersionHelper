@@ -1,14 +1,23 @@
 package com.lollipop.mvh.data
 
-import com.lollipop.mvh.git.GitStore
 import java.io.File
 
 object MvhConfig {
 
     private var sshHomePath = ""
 
+    private const val DIR_WORKSPACE = "workspace"
+
     val homeDir by lazy {
         File(System.getProperty("user.home"), "ModuleVersionHelper")
+    }
+
+    val workspaceDir by lazy {
+        File(homeDir, DIR_WORKSPACE)
+    }
+
+    fun getGitRepository(name: String): File {
+        return File(workspaceDir, name)
     }
 
     fun optSshHome(): String {
