@@ -3,6 +3,7 @@ package com.lollipop.mvh.widget
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
@@ -87,18 +88,22 @@ private fun ColumnScope.ConfigFragment(
             ) {
             }
         }
-        Text(
+        SelectionContainer(
             modifier = Modifier.fillMaxWidth().weight(1F)
-                .padding(horizontal = 4.dp, vertical = 4.dp)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(14.dp)
-                )
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .verticalScroll(rememberScrollState()),
-            text = moduleContent
-        )
+        ) {
+            Text(
+                modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .verticalScroll(rememberScrollState()),
+                text = moduleContent
+            )
+        }
     }
 }
 

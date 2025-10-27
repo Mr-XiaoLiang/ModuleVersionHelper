@@ -2,8 +2,10 @@ package com.lollipop.mvh.data
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.text.AnnotatedString
 import com.lollipop.mvh.tools.FileHelper
 import com.lollipop.mvh.tools.FlowResult
+import com.lollipop.mvh.tools.JsonCodeFormat
 import com.lollipop.mvh.tools.doAsync
 import com.lollipop.mvh.tools.onSync
 import org.json.JSONArray
@@ -34,7 +36,7 @@ class ChooserModule private constructor(
 
     val historyList = SnapshotStateList<File>()
 
-    val currentContent = mutableStateOf("")
+    val currentContent = mutableStateOf(AnnotatedString(""))
 
     private val propertiesFile by lazy {
         File(propertiesDir, name + SUFFIX_PROPERTIES)
@@ -62,7 +64,7 @@ class ChooserModule private constructor(
 
     private fun onContentChanged(content: String) {
         onSync {
-            currentContent.value = content
+            currentContent.value = JsonCodeFormat.format(content)
             onContentChangedCallback?.invoke(content)
         }
     }
