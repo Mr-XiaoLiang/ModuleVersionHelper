@@ -7,7 +7,7 @@ import com.lollipop.mvh.data.MvhConfig
 import com.lollipop.mvh.data.ProjectInfo
 import com.lollipop.mvh.git.GitRepository
 import com.lollipop.mvh.tools.doAsync
-import com.lollipop.mvh.tools.onSync
+import com.lollipop.mvh.tools.onUI
 import com.lollipop.mvh.widget.ConfigPanel
 import com.lollipop.mvh.widget.ContentPage
 import org.json.JSONArray
@@ -52,7 +52,7 @@ object RepositoryPageState {
             }
             resultList
         }.onFinally { result ->
-            onSync {
+            onUI {
                 repositoryList.clear()
                 result.getOrNull()?.let {
                     repositoryList.addAll(it)

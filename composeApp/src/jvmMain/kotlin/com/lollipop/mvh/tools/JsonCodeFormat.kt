@@ -40,71 +40,79 @@ object JsonCodeFormat {
     )
 
     fun format(json: String, option: Option = defaultOption, deepColor: Boolean = false): AnnotatedString {
-        val jsonValue = getJsonValue(json, option.indentFactor) ?: return AnnotatedString(json)
-        return buildAnnotatedString {
-            val inputStream = StringReader(jsonValue)
-            var bracketColorIndex = 0
-            val colorList = LinkedList<Color>()
-            inputStream.forEachLine { line ->
-                var startBracket = findIndex(line, 0, "{")
-                if (startBracket < 0) {
-                    startBracket = findIndex(line, 0, "[")
-                }
-                if (startBracket >= 0) {
-                    val bracketColor = option.getBracketColor(bracketColorIndex)
-                    // 括号的颜色要成对
-                    bracketColorIndex++
-                    if (!deepColor) {
-                        colorList.addLast(bracketColor)
+        try {
+            val jsonValue = getJsonValue(json, option.indentFactor)
+            return buildAnnotatedString {
+                val inputStream = StringReader(jsonValue)
+                var bracketColorIndex = 0
+                val colorList = LinkedList<Color>()
+                inputStream.forEachLine { line ->
+                    var startBracket = findIndex(line, 0, "{")
+                    if (startBracket < 0) {
+                        startBracket = findIndex(line, 0, "[")
                     }
-                    withStyle(SpanStyle(bracketColor)) { append(line) }
-                }
-                var endBracket = findIndex(line, 0, "}")
-                if (endBracket < 0) {
-                    endBracket = findIndex(line, 0, "]")
-                }
-                if (endBracket >= 0) {
-                    val bracketColor = if (deepColor) {
-                        bracketColorIndex--
-                        option.getBracketColor(bracketColorIndex)
-                    } else {
-                        if (colorList.isEmpty()) {
-                            option.getBracketColor(bracketColorIndex++)
-                        } else {
-                            colorList.removeLast()
+                    if (startBracket >= 0) {
+                        val bracketColor = option.getBracketColor(bracketColorIndex)
+                        // 括号的颜色要成对
+                        bracketColorIndex++
+                        if (!deepColor) {
+                            colorList.addLast(bracketColor)
                         }
+                        withStyle(SpanStyle(bracketColor)) { append(line) }
                     }
-                    if (bracketColorIndex < 0) {
-                        bracketColorIndex = 0
+                    var endBracket = findIndex(line, 0, "}")
+                    if (endBracket < 0) {
+                        endBracket = findIndex(line, 0, "]")
                     }
-                    withStyle(SpanStyle(bracketColor)) { append(line) }
+                    if (endBracket >= 0) {
+                        val bracketColor = if (deepColor) {
+                            bracketColorIndex--
+                            option.getBracketColor(bracketColorIndex)
+                        } else {
+                            if (colorList.isEmpty()) {
+                                option.getBracketColor(bracketColorIndex++)
+                            } else {
+                                colorList.removeLast()
+                            }
+                        }
+                        if (bracketColorIndex < 0) {
+                            bracketColorIndex = 0
+                        }
+                        withStyle(SpanStyle(bracketColor)) { append(line) }
+                    }
+                    val colonIndex = findIndex(line, 0, ":")
+                    if (colonIndex >= 0) {
+                        val key = line.take(colonIndex)
+                        val value = line.substring(colonIndex + 1)
+                        withStyle(SpanStyle(option.keyColor)) { append(key) }
+                        withStyle(SpanStyle(option.colonColor)) { append(":") }
+                        withStyle(SpanStyle(option.valueColor)) { append(value) }
+                    }
+                    append("\n")
                 }
-                val colonIndex = findIndex(line, 0, ":")
-                if (colonIndex >= 0) {
-                    val key = line.take(colonIndex)
-                    val value = line.substring(colonIndex + 1)
-                    withStyle(SpanStyle(option.keyColor)) { append(key) }
-                    withStyle(SpanStyle(option.colonColor)) { append(":") }
-                    withStyle(SpanStyle(option.valueColor)) { append(value) }
+            }
+        } catch (e: Throwable) {
+            val errorInfo = e.stackTraceToString()
+            return buildAnnotatedString {
+                withStyle(SpanStyle(Color.Red)) {
+                    append(errorInfo)
                 }
-                append("\n")
+                withStyle(SpanStyle(Color.Black)) {
+                    append(json)
+                }
             }
         }
     }
 
-    private fun getJsonValue(json: String, indentFactor: Int): String? {
-        try {
-            val trimValue = json.trim()
-            if (trimValue.startsWith("{") && trimValue.endsWith("}")) {
-                return JSONObject(trimValue).toString(indentFactor)
-            }
-            if (trimValue.startsWith("[") && trimValue.endsWith("]")) {
-                return JSONArray(trimValue).toString(indentFactor)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+    private fun getJsonValue(json: String, indentFactor: Int): String {
+        val trimValue = json.trim()
+        if (trimValue.startsWith("{") && trimValue.endsWith("}")) {
+            return JSONObject(trimValue).toString(indentFactor)
         }
-        return null
+        if (trimValue.startsWith("[") && trimValue.endsWith("]")) {
+            return JSONArray(trimValue).toString(indentFactor)
+        }
+        throw IllegalArgumentException("Content is not json")
     }
 
 

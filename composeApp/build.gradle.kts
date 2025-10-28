@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
+//    alias(libs.plugins.composeHotReload)
 }
 
 kotlin {
@@ -37,6 +37,7 @@ kotlin {
             // https://mvnrepository.com/artifact/org.json/json
             implementation("org.json:json:20250517")
             implementation(libs.androidx.runtime.saveable.desktop)
+            implementation(project(":log"))
         }
     }
 }

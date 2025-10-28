@@ -1,6 +1,8 @@
 package com.lollipop.mvh.tools
 
 import java.util.concurrent.Executors
+import javax.swing.SwingUtilities
+
 
 object ThreadHelper {
 
@@ -35,6 +37,10 @@ object ThreadHelper {
         runnable: Runnable
     ) {
         syncExecutor.execute(runnable)
+    }
+
+    fun postMain(runnable: Runnable) {
+        SwingUtilities.invokeLater(runnable)
     }
 
     class SafeRunnable(
@@ -120,5 +126,13 @@ fun <T> onSync(
 ): Flow<T> {
     val flow = Flow(block)
     ThreadHelper.postSync(flow)
+    return flow
+}
+
+fun <T> onUI(
+    block: () -> T
+): Flow<T> {
+    val flow = Flow(block)
+    ThreadHelper.postMain(flow)
     return flow
 }

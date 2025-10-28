@@ -3,11 +3,7 @@ package com.lollipop.mvh.data
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.text.AnnotatedString
-import com.lollipop.mvh.tools.FileHelper
-import com.lollipop.mvh.tools.FlowResult
-import com.lollipop.mvh.tools.JsonCodeFormat
-import com.lollipop.mvh.tools.doAsync
-import com.lollipop.mvh.tools.onSync
+import com.lollipop.mvh.tools.*
 import org.json.JSONArray
 import java.io.File
 
@@ -63,7 +59,7 @@ class ChooserModule private constructor(
     }
 
     private fun onContentChanged(content: String) {
-        onSync {
+        onUI {
             currentContent.value = JsonCodeFormat.format(content)
             onContentChangedCallback?.invoke(content)
         }
@@ -86,7 +82,7 @@ class ChooserModule private constructor(
             }
             outList
         }.onFinally {
-            onSync {
+            onUI {
                 historyList.clear()
                 if (it is FlowResult.Success) {
                     historyList.addAll(it.data)
