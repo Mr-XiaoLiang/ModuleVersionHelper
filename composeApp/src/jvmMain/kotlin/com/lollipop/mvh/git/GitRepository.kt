@@ -90,7 +90,7 @@ class GitRepository(
         val git = Git.cloneRepository()
             .setURI(remoteUrl)
             .setDirectory(dir)
-            .setTransportConfigCallback(SshFactory.createConfigCallback())
+            .bindSsh()
             .setCallback(object : CloneCommand.Callback {
                 override fun initializedSubmodules(submodules: Collection<String?>?) {
                     onUI {
@@ -122,7 +122,7 @@ class GitRepository(
 
     private fun pull(git: Git) {
         git.pull()
-            .setTransportConfigCallback(SshFactory.createConfigCallback())
+            .bindSsh()
             .call()
     }
 
