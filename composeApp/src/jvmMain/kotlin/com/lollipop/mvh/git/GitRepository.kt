@@ -9,6 +9,7 @@ import com.lollipop.mvh.git.GitLog.Error
 import com.lollipop.mvh.git.GitLog.Surprise
 import com.lollipop.mvh.tools.FlowResult
 import com.lollipop.mvh.tools.doAsync
+import com.lollipop.mvh.tools.onUI
 import org.eclipse.jgit.api.CloneCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.AnyObjectId
@@ -92,15 +93,21 @@ class GitRepository(
             .setTransportConfigCallback(SshFactory.createConfigCallback())
             .setCallback(object : CloneCommand.Callback {
                 override fun initializedSubmodules(submodules: Collection<String?>?) {
-                    log("Initialized submodules $submodules")
+                    onUI {
+                        log("Initialized submodules $submodules")
+                    }
                 }
 
                 override fun cloningSubmodule(path: String?) {
-                    log("Cloning submodule $path")
+                    onUI {
+                        log("Cloning submodule $path")
+                    }
                 }
 
                 override fun checkingOut(commit: AnyObjectId?, path: String?) {
-                    log("Checking out $commit : $path")
+                    onUI {
+                        log("Checking out $commit : $path")
+                    }
                 }
             })
             .call()
@@ -109,8 +116,14 @@ class GitRepository(
 
     private fun pullGit(dir: File): Git? {
         val git = Git.open(dir)
-        git.pull().call()
+        pull(git)
         return git
+    }
+
+    private fun pull(git: Git) {
+        git.pull()
+            .setTransportConfigCallback(SshFactory.createConfigCallback())
+            .call()
     }
 
     fun update() {
@@ -121,7 +134,7 @@ class GitRepository(
         doAsync {
             val git = gitInstance
             if (git != null) {
-                git.pull().call()
+                pull(git)
             } else {
                 gitInstance = updateGit()
             }
