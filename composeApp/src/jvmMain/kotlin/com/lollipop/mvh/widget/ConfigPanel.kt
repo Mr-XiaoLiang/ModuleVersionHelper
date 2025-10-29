@@ -58,7 +58,7 @@ fun OutputPanel(
 }
 
 @Composable
-private fun ColumnScope.ConfigFragment(
+fun ColumnScope.ConfigFragment(
     title: String,
     module: ChooserModule,
     template: String

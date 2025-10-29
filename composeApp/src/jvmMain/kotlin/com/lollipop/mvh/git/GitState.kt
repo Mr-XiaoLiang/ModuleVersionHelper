@@ -4,6 +4,8 @@ sealed class GitState {
 
     object Pending : GitState()
     object Success : GitState()
+
+    object Running : GitState()
     data class Error(val message: String, val throwable: Throwable? = null) : GitState() {
 
         val logValue by lazy {

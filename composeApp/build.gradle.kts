@@ -31,13 +31,23 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
 
             // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
-            implementation("org.eclipse.jgit:org.eclipse.jgit:7.4.0.202509020913-r")
+            implementation("org.eclipse.jgit:org.eclipse.jgit:7.4.0.202509020913-r") {
+                exclude("com.jcraft", "jsch")
+            }
+            implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:7.4.0.202509020913-r") {
+                exclude("com.jcraft", "jsch")
+            }
             // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.ssh.jsch
-            implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:7.4.0.202509020913-r")
+//            implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:7.4.0.202509020913-r")
+            // https://github.com/mwiede/jsch
+//            implementation("com.jcraft:jsch:0.1.55")
+            implementation("com.github.mwiede:jsch:2.27.5")
+
             // https://mvnrepository.com/artifact/org.json/json
             implementation("org.json:json:20250517")
             implementation(libs.androidx.runtime.saveable.desktop)
-            implementation(project(":log"))
+            // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+            implementation("org.slf4j:slf4j-simple:2.0.17")
         }
     }
 }

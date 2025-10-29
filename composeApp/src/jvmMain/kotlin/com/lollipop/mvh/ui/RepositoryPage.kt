@@ -62,7 +62,7 @@ object RepositoryPageState {
     }
 
     private fun getGitName(url: String): String {
-        return url.substringAfterLast("/").substringBefore(".")
+        return url.substringAfterLast("/").substringBeforeLast(".")
     }
 
 }

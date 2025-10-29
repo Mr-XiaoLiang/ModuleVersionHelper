@@ -5,8 +5,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.lollipop.mvh.data.ProjectInfo
+import com.lollipop.mvh.git.GitLog.Error
+import com.lollipop.mvh.git.GitLog.Surprise
+import com.lollipop.mvh.tools.FlowResult
+import com.lollipop.mvh.tools.doAsync
+import org.eclipse.jgit.api.CloneCommand
 import org.eclipse.jgit.api.Git
-import org.slf4j.LoggerFactory
+import org.eclipse.jgit.lib.AnyObjectId
 import java.io.File
 
 class GitRepository(
@@ -31,15 +36,11 @@ class GitRepository(
 
     private var gitInstance: Git? = null
 
-    private val log by lazy {
-        LoggerFactory.getLogger("")
-    }
-
     private fun setState(state: GitState) {
         stateMutable.value = state
         when (state) {
             is GitState.Error -> {
-                putLog(GitLog.Error(state.logValue))
+                putLog(Error(state.logValue))
             }
 
             GitState.Pending -> {
@@ -47,7 +48,11 @@ class GitRepository(
             }
 
             GitState.Success -> {
-                putLog(GitLog.Surprise("Success"))
+                putLog(Surprise("Success"))
+            }
+
+            GitState.Running -> {
+                log("Running")
             }
         }
     }
@@ -84,9 +89,20 @@ class GitRepository(
         val git = Git.cloneRepository()
             .setURI(remoteUrl)
             .setDirectory(dir)
-//            .setBranch(remoteBranchName)
             .setTransportConfigCallback(SshFactory.createConfigCallback())
-//            .setCallback()
+            .setCallback(object : CloneCommand.Callback {
+                override fun initializedSubmodules(submodules: Collection<String?>?) {
+                    log("Initialized submodules $submodules")
+                }
+
+                override fun cloningSubmodule(path: String?) {
+                    log("Cloning submodule $path")
+                }
+
+                override fun checkingOut(commit: AnyObjectId?, path: String?) {
+                    log("Checking out $commit : $path")
+                }
+            })
             .call()
         return git
     }
@@ -98,15 +114,28 @@ class GitRepository(
     }
 
     fun update() {
-        try {
+        if (state.value == GitState.Running) {
+            return
+        }
+        setState(GitState.Running)
+        doAsync {
             val git = gitInstance
             if (git != null) {
                 git.pull().call()
             } else {
                 gitInstance = updateGit()
             }
-        } catch (e: Throwable) {
-            onError("Update.ERROR", e)
+        }.onFinally { result ->
+            when (result) {
+                is FlowResult.Error<*> -> {
+                    log(result.error.stackTraceToString())
+                    setState(GitState.Error("更新失败"))
+                }
+
+                is FlowResult.Success<*> -> {
+                    setState(GitState.Success)
+                }
+            }
         }
     }
 
