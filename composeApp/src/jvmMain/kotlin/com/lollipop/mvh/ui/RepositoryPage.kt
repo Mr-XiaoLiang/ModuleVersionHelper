@@ -26,8 +26,12 @@ object RepositoryPageState {
         """
         [
             {
-                "url":"Git仓库链接",
-                "displayName":"展示名称，支持中文与符号"
+                "url": "Git仓库链接",
+                "displayName": "展示名称，支持中文与符号",
+                "sshKeyPath": "SSH私钥的完整路径，与邮箱密码二选一",
+                "sshHostPath": "SSH的Known Hosts文件路径，默认为~/.ssh/known_hosts，与邮箱密码二选一",
+                "email": "邮箱地址，与SSH私钥二选一",
+                "password": "邮箱密码，与SSH私钥二选一"
             }
         ]
         """.trimIndent()
@@ -42,7 +46,19 @@ object RepositoryPageState {
                 val url = jsonObject.optString("url")
                 val displayName = jsonObject.optString("displayName")
                 val localName = getGitName(url)
-                val info = ProjectInfo(remote = url, localName = localName, displayName = displayName)
+                val sshHostPath = jsonObject.optString("sshHostPath")
+                val sshKeyPath = jsonObject.optString("sshKeyPath")
+                val email = jsonObject.optString("email")
+                val password = jsonObject.optString("password")
+                val info = ProjectInfo(
+                    remote = url,
+                    localName = localName,
+                    displayName = displayName,
+                    sshHostPath = sshHostPath,
+                    sshKeyPath = sshKeyPath,
+                    userEmail = email,
+                    userPwd = password
+                )
                 val repository = GitRepository(
                     remoteUrl = url,
                     localDir = MvhConfig.getGitRepository(localName),

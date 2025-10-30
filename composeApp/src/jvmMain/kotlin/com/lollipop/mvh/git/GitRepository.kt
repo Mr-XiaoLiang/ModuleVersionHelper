@@ -1,18 +1,13 @@
 package com.lollipop.mvh.git
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.lollipop.mvh.data.ProjectInfo
 import com.lollipop.mvh.git.GitLog.Error
-import com.lollipop.mvh.git.GitLog.Surprise
 import com.lollipop.mvh.tools.FlowResult
 import com.lollipop.mvh.tools.doAsync
-import com.lollipop.mvh.tools.onUI
-import org.eclipse.jgit.api.CloneCommand
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.AnyObjectId
+import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
 
 class GitRepository(
@@ -23,19 +18,25 @@ class GitRepository(
 
     private val stateMutable = mutableStateOf<GitState>(GitState.Pending)
 
-    private val logListMutable = mutableStateListOf<GitLog>()
+    private val logListMutable = ArrayList<GitLog>()
+    private var outList: MutableList<GitLog>? = null
+
+    private val progressCallback by lazy {
+        ProgressCallback(stateCallback = ::setState, logCallback = ::putLog)
+    }
 
     val state: State<GitState>
         get() {
             return stateMutable
         }
 
-    val logList: SnapshotStateList<GitLog>
-        get() {
-            return logListMutable
-        }
-
     private var gitInstance: Git? = null
+
+    fun bindLogOut(outList: MutableList<GitLog>?) {
+        outList?.clear()
+        outList?.addAll(logListMutable)
+        this.outList = outList
+    }
 
     private fun setState(state: GitState) {
         stateMutable.value = state
@@ -45,15 +46,14 @@ class GitRepository(
             }
 
             GitState.Pending -> {
-                log("Pending")
+                log("--> Pending")
             }
 
             GitState.Success -> {
-                putLog(Surprise("Success"))
+                log("--> Complete")
             }
 
-            GitState.Running -> {
-                log("Running")
+            is GitState.Running -> {
             }
         }
     }
@@ -64,6 +64,7 @@ class GitRepository(
 
     private fun putLog(msg: GitLog) {
         logListMutable.add(0, msg)
+        outList?.add(0, msg)
     }
 
     private fun log(msg: String) {
@@ -90,26 +91,8 @@ class GitRepository(
         val git = Git.cloneRepository()
             .setURI(remoteUrl)
             .setDirectory(dir)
-            .bindSsh()
-            .setCallback(object : CloneCommand.Callback {
-                override fun initializedSubmodules(submodules: Collection<String?>?) {
-                    onUI {
-                        log("Initialized submodules $submodules")
-                    }
-                }
-
-                override fun cloningSubmodule(path: String?) {
-                    onUI {
-                        log("Cloning submodule $path")
-                    }
-                }
-
-                override fun checkingOut(commit: AnyObjectId?, path: String?) {
-                    onUI {
-                        log("Checking out $commit : $path")
-                    }
-                }
-            })
+            .bindAuth(projectInfo)
+            .setProgressMonitor(progressCallback)
             .call()
         return git
     }
@@ -121,16 +104,25 @@ class GitRepository(
     }
 
     private fun pull(git: Git) {
-        git.pull()
-            .bindSsh()
+        val result = git.pull()
+            .bindAuth(projectInfo)
+            .setProgressMonitor(progressCallback)
             .call()
+        if (result.isSuccessful) {
+            log("Pull Success")
+        } else {
+            log("Pull Failed")
+            result.mergeResult.conflicts.forEach { conflict ->
+                log("冲突文件：${conflict.key} : ${conflict.value}")
+            }
+        }
     }
 
     fun update() {
-        if (state.value == GitState.Running) {
+        if (state.value is GitState.Running) {
             return
         }
-        setState(GitState.Running)
+        setState(GitState.Running(0, -1))
         doAsync {
             val git = gitInstance
             if (git != null) {
@@ -150,6 +142,55 @@ class GitRepository(
                 }
             }
         }
+    }
+
+    private class ProgressCallback(
+        val stateCallback: (GitState) -> Unit,
+        val logCallback: (GitLog) -> Unit
+    ) : ProgressMonitor {
+
+        private var totalTasksCount = 0
+        private var currentTaskIndex = 0
+        private var currentTaskWork = 0
+
+        private var lastUpdateTime = 0L
+
+        private val updateInterval = 1000L
+
+        override fun start(totalTasks: Int) {
+            stateCallback(GitState.Running(current = 0, total = totalTasks))
+            totalTasksCount = totalTasks
+            currentTaskIndex = 0
+            logCallback(GitLog.Info("任务开始, 总计 $totalTasksCount ------------------------"))
+        }
+
+        override fun beginTask(title: String?, totalWork: Int) {
+            currentTaskWork = totalWork
+            logCallback(GitLog.Info("开始更新(${currentTaskIndex}/${totalTasksCount})，$totalWork : $title"))
+        }
+
+        override fun update(completed: Int) {
+            currentTaskIndex = completed
+            val now = System.currentTimeMillis()
+            if (now - lastUpdateTime > updateInterval) {
+                lastUpdateTime = now
+                logCallback(GitLog.Info("更新进度(${completed}/${totalTasksCount})"))
+            }
+        }
+
+        override fun endTask() {
+            currentTaskIndex++
+            logCallback(GitLog.Info("更新完成(${currentTaskIndex}/${totalTasksCount})"))
+            stateCallback(GitState.Running(current = currentTaskIndex, total = totalTasksCount))
+        }
+
+        override fun isCancelled(): Boolean {
+            return false
+        }
+
+        override fun showDuration(enabled: Boolean) {
+        }
+
     }
 
 }

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,12 @@ import com.lollipop.mvh.tools.Clipboard
 import com.lollipop.mvh.tools.FileChooserHelper
 import java.io.File
 
+private fun Modifier.clickableIcon(onClick: () -> Unit): Modifier {
+    return size(40.dp)
+        .clip(RoundedCornerShape(8.dp))
+        .clickable(onClick = onClick)
+        .padding(horizontal = 8.dp, vertical = 8.dp)
+}
 
 @Composable
 fun ConfigChooser(
@@ -45,41 +52,35 @@ fun ConfigChooser(
             modifier = Modifier.weight(1F),
             color = contentColor
         )
-        Spacer(modifier = Modifier.size(16.dp))
         Icon(
             imageVector = Icons.Filled.FolderOpen,
             contentDescription = "FolderOpen",
-            modifier = Modifier.size(24.dp)
-                .clickable {
-                    FileChooserHelper.openFileChooser { files ->
-                        if (files.isNotEmpty()) {
-                            val file = File(files[0])
-                            onFileChooser(file)
-                            module.choose(file, true)
-                        }
+            modifier = Modifier.clickableIcon {
+                FileChooserHelper.openFileChooser { files ->
+                    if (files.isNotEmpty()) {
+                        val file = File(files[0])
+                        onFileChooser(file)
+                        module.choose(file, true)
                     }
-                },
+                }
+            },
             tint = contentColor
         )
-        Spacer(modifier = Modifier.size(16.dp))
         Icon(
             imageVector = Icons.Filled.History,
             contentDescription = "History",
-            modifier = Modifier.size(24.dp)
-                .clickable {
-                    showDialog = true
-                },
+            modifier = Modifier.clickableIcon {
+                showDialog = true
+            },
             tint = contentColor
         )
         if (template.isNotEmpty()) {
-            Spacer(modifier = Modifier.size(16.dp))
             Icon(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = "Info",
-                modifier = Modifier.size(24.dp)
-                    .clickable {
-                        showTemplateDialog = true
-                    },
+                modifier = Modifier.clickableIcon {
+                    showTemplateDialog = true
+                },
                 tint = contentColor
             )
         }

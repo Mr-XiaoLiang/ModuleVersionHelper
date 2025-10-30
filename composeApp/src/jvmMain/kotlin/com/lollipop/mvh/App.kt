@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AddHome
+import androidx.compose.material.icons.filled.Commit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Output
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -73,7 +76,7 @@ private fun AppNavHost(
         startDestination = startDestination.name
     ) {
         composable(Destination.GIT_STATE.name) {
-            GitStatePage()
+            GitFetchPage()
         }
         composable(Destination.REPOSITORY.name) {
             RepositoryPage()
