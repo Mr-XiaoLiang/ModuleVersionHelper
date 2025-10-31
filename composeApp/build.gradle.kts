@@ -37,10 +37,7 @@ kotlin {
             implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:7.4.0.202509020913-r") {
                 exclude("com.jcraft", "jsch")
             }
-            // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.ssh.jsch
-//            implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:7.4.0.202509020913-r")
             // https://github.com/mwiede/jsch
-//            implementation("com.jcraft:jsch:0.1.55")
             implementation("com.github.mwiede:jsch:2.27.5")
 
             // https://mvnrepository.com/artifact/org.json/json
