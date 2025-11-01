@@ -93,19 +93,71 @@ class LibsVersionToml {
         }
 
         private fun readByVersions(line: String, out: TomlBuffer) {
-            // TODO
+            val keyValuePair = line.split("=")
+            if (keyValuePair.size != 2) {
+                return
+            }
+            val key = keyValuePair[0].trim()
+            val value = keyValuePair[1].substringBefore("#").trim()
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+                out.put(key, value.substring(1, key.length - 1))
+            } else if (value.startsWith("'") && value.endsWith("'")) {
+                out.put(key, value.substring(1, key.length - 1))
+            } else if (value.startsWith("{") && value.endsWith("}")) {
+                out.put(key, readRichValue(value))
+            }
         }
 
         private fun readByLibraries(line: String, out: TomlBuffer) {
-            // TODO
+            val keyValuePair = line.split("=")
+            if (keyValuePair.size != 2) {
+                return
+            }
+            val key = keyValuePair[0].trim()
+            val value = keyValuePair[1].substringBefore("#").trim()
+            if (value.startsWith("{") && value.endsWith("}")) {
+                out.put(key, readRichValue(value))
+            }
         }
 
         private fun readByPlugins(line: String, out: TomlBuffer) {
-            // TODO
+            val keyValuePair = line.split("=")
+            if (keyValuePair.size != 2) {
+                return
+            }
+            val key = keyValuePair[0].trim()
+            val value = keyValuePair[1].substringBefore("#").trim()
+            if (value.startsWith("{") && value.endsWith("}")) {
+                out.put(key, readRichValue(value))
+            }
         }
 
         private fun readByBundles(line: String, out: TomlBuffer) {
-            // TODO
+            val keyValuePair = line.split("=")
+            if (keyValuePair.size != 2) {
+                return
+            }
+            val key = keyValuePair[0].trim()
+            val value = keyValuePair[1].substringBefore("#").trim()
+            if (value.startsWith("{") && value.endsWith("}")) {
+                out.put(key, readRichValue(value))
+            }
+        }
+
+        private fun readByMetadata(line: String, out: TomlBuffer) {
+            val keyValuePair = line.split("=")
+            if (keyValuePair.size != 2) {
+                return
+            }
+            val key = keyValuePair[0].trim()
+            val value = keyValuePair[1].substringBefore("#").trim()
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+                out.put(key, value.substring(1, key.length - 1))
+            } else if (value.startsWith("'") && value.endsWith("'")) {
+                out.put(key, value.substring(1, key.length - 1))
+            } else if (value.startsWith("{") && value.endsWith("}")) {
+                out.put(key, readRichValue(value))
+            }
         }
 
         private fun buildLibsInfo(
@@ -120,8 +172,17 @@ class LibsVersionToml {
             return libs
         }
 
-        private fun readByMetadata(line: String, out: TomlBuffer) {
-            // TODO
+        private fun readRichValue(value: String): Map<String, String> {
+            val content = value.substringAfter("{").substringBefore("}")
+            val entryArray = content.split(",")
+            val outMap = mutableMapOf<String, String>()
+            entryArray.forEach { entry ->
+                val keyValuePair = entry.split("=")
+                val key = keyValuePair[0].trim()
+                val value = keyValuePair[1].substringAfter("\"").substringBeforeLast("\"").trim()
+                outMap[key] = value
+            }
+            return outMap
         }
 
     }
