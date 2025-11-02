@@ -7,7 +7,7 @@ import java.io.File
 
 fun main() = application {
     Initialize.init()
-    LibsVersionToml.TomlReader.read(file = File("C:\\Users\\lolli\\ModuleVersionHelper\\workspace\\ModuleVersionHelper\\gradle\\libs.versions.toml"))
+    LibsVersionToml.parse(file = File("C:\\Users\\lolli\\ModuleVersionHelper\\workspace\\ModuleVersionHelper\\gradle\\libs.versions.toml"))
     Window(
         onCloseRequest = ::exitApplication,
         title = "模块版本助手",
