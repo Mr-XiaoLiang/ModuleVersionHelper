@@ -1,6 +1,42 @@
 package com.lollipop.mvh.data
 
+import java.io.File
+
 object VersionParser {
+
+    fun readBuildGradle(file: File, libs: LibsVersionToml): List<VersionInfo> {
+        val outList = mutableListOf<VersionInfo>()
+        try {
+            file.forEachLine { line ->
+                val trimLine = line.trim()
+                val suffix = file.name.substringAfterLast(".")
+                val isKts = suffix == "kts"
+                var key = ""
+                if (isKts || trimLine.contains("(")) {
+                    key = trimLine.substringBefore("(")
+                } else {
+                    key = trimLine.substringBefore(" \"").trim()
+                }
+                if (key == "implementation"
+                    || key == "api"
+                    || key == "compileOnly"
+                    || key == "annotationProcessor"
+                    || key == "kapt"
+                    || key == "testImplementation"
+                    || key == "debugImplementation"
+                    || key == "releaseImplementation"
+                ) {
+                    val module = parse(libs, trimLine)
+                    if (module != null) {
+                        outList.add(module)
+                    }
+                }
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+        return outList
+    }
 
     fun parse(libs: LibsVersionToml, line: String): VersionInfo? {
         // 双引号代码
