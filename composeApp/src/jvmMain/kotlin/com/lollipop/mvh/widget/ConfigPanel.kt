@@ -1,9 +1,12 @@
 package com.lollipop.mvh.widget
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
@@ -14,13 +17,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.lollipop.mvh.data.ChooserModule
 import com.lollipop.mvh.tools.Clipboard
 
 @Composable
 fun OutputPanel(
-    contentValue: String
+    contentValue: String,
+    options: @Composable RowScope.(Color) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
@@ -29,16 +34,16 @@ fun OutputPanel(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)
+            modifier = Modifier.fillMaxWidth().padding(all = 4.dp)
         ) {
             val iconColor = MaterialTheme.colorScheme.onBackground
+            options(iconColor)
             Icon(
                 imageVector = Icons.Filled.ContentCopy,
                 contentDescription = "ContentCopy",
-                modifier = Modifier.size(24.dp)
-                    .clickable {
-                        Clipboard.copy(contentValue)
-                    },
+                modifier = Modifier.clickableIcon {
+                    Clipboard.copy(contentValue)
+                },
                 tint = iconColor
             )
         }

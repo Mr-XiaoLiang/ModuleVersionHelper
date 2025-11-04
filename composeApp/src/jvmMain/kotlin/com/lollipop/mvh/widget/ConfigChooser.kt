@@ -23,7 +23,7 @@ import com.lollipop.mvh.tools.Clipboard
 import com.lollipop.mvh.tools.FileChooserHelper
 import java.io.File
 
-private fun Modifier.clickableIcon(onClick: () -> Unit): Modifier {
+fun Modifier.clickableIcon(onClick: () -> Unit): Modifier {
     return size(40.dp)
         .clip(RoundedCornerShape(8.dp))
         .clickable(onClick = onClick)
