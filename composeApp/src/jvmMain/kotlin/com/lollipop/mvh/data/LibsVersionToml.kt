@@ -14,6 +14,10 @@ class LibsVersionToml {
             }
         }
 
+        fun parseSync(file: File): LibsVersionToml {
+            return TomlReader.read(file)
+        }
+
         private fun getModuleInfo(api: String, value: TomlValue, versions: TomlBuffer): ModuleInfo? {
             if (value is TomlValue.Obj) {
                 val module = value.opt("module") ?: ""
