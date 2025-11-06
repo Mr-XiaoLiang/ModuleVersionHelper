@@ -8,6 +8,9 @@ import java.io.File
 class LibsVersionToml {
 
     companion object {
+
+        val EMPTY = LibsVersionToml()
+
         fun parse(file: File): Flow<LibsVersionToml> {
             return doAsync {
                 TomlReader.read(file)

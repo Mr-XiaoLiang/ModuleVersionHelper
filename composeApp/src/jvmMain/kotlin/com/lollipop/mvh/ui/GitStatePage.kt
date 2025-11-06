@@ -101,6 +101,7 @@ fun GitFetchPage() {
                         modifier = Modifier.size(40.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable(onClick = {
+                                OutputPageState.notifyChanged()
                                 repositoryList.forEach { it.update() }
                             })
                             .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -155,6 +156,7 @@ fun GitFetchPage() {
                                         .padding(8.dp)
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable(onClick = {
+                                            OutputPageState.notifyChanged()
                                             repository.update()
                                         })
                                         .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -206,9 +208,7 @@ fun GitFetchPage() {
                     }
                 }
             }
-
         }
-
     }
 }
 

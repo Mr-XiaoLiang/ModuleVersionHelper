@@ -8,6 +8,7 @@ import com.lollipop.mvh.data.ProjectInfo
 import com.lollipop.mvh.data.TemplateInfo
 import com.lollipop.mvh.data.VersionParser
 import com.lollipop.mvh.tools.doAsync
+import com.lollipop.mvh.tools.onUI
 import com.lollipop.mvh.widget.ConfigPanel
 import com.lollipop.mvh.widget.ContentPage
 import org.json.JSONObject
@@ -94,6 +95,10 @@ object TemplatePageState {
             }
             this.moduleList.clear()
             this.moduleList.addAll(moduleList)
+        }.onFinally {
+            onUI {
+                OutputPageState.notifyChanged()
+            }
         }
     }
 

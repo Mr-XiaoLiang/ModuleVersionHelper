@@ -18,12 +18,20 @@ object SamplePageState {
         }
     }
 
+    fun getHeader(): String {
+        return headerModule.currentContent.value.text
+    }
+
+    fun getFooter(): String {
+        return footerModule.currentContent.value.text
+    }
+
     private fun onHeaderChanged(content: String) {
-        // TODO
+        OutputPageState.notifyChanged()
     }
 
     private fun onFooterChanged(content: String) {
-        // TODO
+        OutputPageState.notifyChanged()
     }
 
 }

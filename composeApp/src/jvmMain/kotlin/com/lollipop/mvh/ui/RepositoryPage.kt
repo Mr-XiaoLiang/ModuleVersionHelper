@@ -69,6 +69,7 @@ object RepositoryPageState {
             resultList
         }.onFinally { result ->
             onUI {
+                OutputPageState.notifyChanged()
                 repositoryList.clear()
                 result.getOrNull()?.let {
                     repositoryList.addAll(it)
