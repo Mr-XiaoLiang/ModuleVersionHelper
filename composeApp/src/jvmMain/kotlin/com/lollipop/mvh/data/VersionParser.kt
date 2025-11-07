@@ -5,6 +5,7 @@ import java.io.File
 object VersionParser {
 
     fun readBuildGradle(file: File, libs: LibsVersionToml): List<VersionInfo> {
+        println("VersionParser.readBuildGradle: ${file.path}")
         val outList = mutableListOf<VersionInfo>()
         try {
             file.forEachLine { line ->
@@ -39,6 +40,7 @@ object VersionParser {
     }
 
     fun parse(libs: LibsVersionToml, line: String): VersionInfo? {
+        println("VersionParser.parse: $line")
         // 双引号代码
         if (line.contains("\"")) {
             // 带有引号，就取引号的

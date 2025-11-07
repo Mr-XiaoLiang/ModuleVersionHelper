@@ -59,39 +59,43 @@ object OutputPageState {
         doAsync {
             val builder = StringBuilder()
             builder.append(SamplePageState.getHeader())
+            builder.append("\n")
             for (project in projectList) {
                 val projectDir = project.localDir
                 val tomlInfo = findVersionLibs(projectDir) ?: LibsVersionToml.EMPTY
                 val listFiles = projectDir.listFiles()
-                val versionList = mutableListOf<VersionParser.VersionInfo>()
                 for (file in listFiles) {
                     if (file.isDirectory) {
+                        val versionList = mutableListOf<VersionParser.VersionInfo>()
                         val moduleName = file.name
                         if (whitelist.contains(moduleName)) {
                             continue
                         }
                         val buildGradleFile = File(file, "build.gradle")
                         if (buildGradleFile.exists() && buildGradleFile.isFile) {
-                            versionList.addAll(VersionParser.readBuildGradle(file = file, libs = tomlInfo))
+                            versionList.addAll(VersionParser.readBuildGradle(file = buildGradleFile, libs = tomlInfo))
                         } else {
                             val buildGradleKtsFile = File(file, "build.gradle.kts")
                             if (buildGradleKtsFile.exists() && buildGradleKtsFile.isFile) {
-                                versionList.addAll(VersionParser.readBuildGradle(file = file, libs = tomlInfo))
+                                versionList.addAll(VersionParser.readBuildGradle(file = buildGradleKtsFile, libs = tomlInfo))
                             }
                         }
                         versionList.forEach { version ->
-                            builder.append("\n")
                             val line = TemplatePageState.getLine(
                                 projectInfo = project.projectInfo,
                                 moduleName = moduleName,
                                 versionInfo = version
                             )
-                            builder.append(line)
+                            if (line.isNotEmpty()) {
+                                builder.append(line)
+                                builder.append("\n")
+                            }
                         }
                     }
                 }
                 successCount.value++
             }
+            builder.append("\n")
             builder.append(SamplePageState.getFooter())
             builder.toString()
         }.onFinally { result ->
