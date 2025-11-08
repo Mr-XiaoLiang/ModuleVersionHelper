@@ -89,18 +89,6 @@ fun GitFetchPage() {
                         modifier = Modifier.size(40.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable(onClick = {
-
-                            })
-                            .padding(horizontal = 8.dp, vertical = 8.dp),
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    Icon(
-                        modifier = Modifier.size(40.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable(onClick = {
                                 OutputPageState.notifyChanged()
                                 repositoryList.forEach { it.update() }
                             })
@@ -114,7 +102,7 @@ fun GitFetchPage() {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth().weight(1F)
                 ) {
-                    items(repositoryList.size) { index ->
+                    items(repositoryList.size, key = { repositoryList[it].remoteUrl }) { index ->
                         ListItem {
                             val repository = repositoryList[index]
                             val gitState by remember { repository.state }
@@ -135,8 +123,6 @@ fun GitFetchPage() {
                                         fontSize = 14.sp
                                     )
                                 }
-                                // 获取桌面实例并打开文件夹
-//                                Desktop.getDesktop().open(folder);
                                 Icon(
                                     imageVector = Icons.Filled.FolderOpen,
                                     contentDescription = "CloudDownload",

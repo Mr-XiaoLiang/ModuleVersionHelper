@@ -159,10 +159,17 @@ fun HistoryDialog(
                             ) {
                                 Row {
                                     val exists = file.exists()
+
                                     if (exists) {
-                                        Spacer(modifier = Modifier.size(24.dp))
+                                        Icon(
+                                            modifier = Modifier.size(24.dp),
+                                            imageVector = Icons.Filled.AttachFile,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colors.onSurface
+                                        )
                                     } else {
                                         Icon(
+                                            modifier = Modifier.size(24.dp),
                                             imageVector = Icons.Filled.Warning,
                                             contentDescription = null,
                                             tint = MaterialTheme.colors.error
@@ -170,7 +177,8 @@ fun HistoryDialog(
                                     }
                                     Text(
                                         text = file.name,
-                                        modifier = Modifier.weight(1F).padding(horizontal = 16.dp)
+                                        modifier = Modifier.weight(1F).padding(horizontal = 16.dp),
+                                        color = MaterialTheme.colors.onSurface
                                     )
                                     Spacer(modifier = Modifier.size(16.dp))
                                     Icon(
