@@ -1,4 +1,4 @@
-rootProject.name = "mvh"
+rootProject.name = "ModuleVersionHelper"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -33,4 +33,3 @@ plugins {
 }
 
 include(":composeApp")
-include("log")

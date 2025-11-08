@@ -1,4 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -54,10 +56,41 @@ compose.desktop {
     application {
         mainClass = "com.lollipop.mvh.MainKt"
 
+        buildTypes.release {
+            proguard {
+                configurationFiles.from(file("proguard-rules.pro"))
+                isEnabled = false
+            }
+        }
+
+        jvmArgs += listOf("-Xmx2G")
+        val appName = "ModuleVersionHelper"
+        val versionName = "1.0.0"
+        val pkgName = "com.lollipop.mvh"
+        val sdf = SimpleDateFormat("yyyyMMdd-HHmmss")
+        val buildVersion = "${versionName}-${sdf.format(Date(System.currentTimeMillis()))}"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.lollipop.mvh"
-            packageVersion = "1.0.0"
+            packageName = appName
+            packageVersion = versionName
+            description = appName
+            macOS {
+                dockName = appName
+                bundleID = pkgName
+                pkgPackageVersion = versionName
+                pkgPackageBuildVersion = buildVersion
+//                iconFile.set(project.file("src/desktopMain/resources/icon.icns"))
+            }
+            windows {
+                menuGroup = appName
+                dirChooser = true
+//                iconFile.set(project.file("src/desktopMain/resources/icon.ico"))
+            }
+            linux {
+                packageName = appName
+                menuGroup = appName
+//                iconFile.set(project.file("src/desktopMain/resources/icon.png"))
+            }
         }
     }
 }
